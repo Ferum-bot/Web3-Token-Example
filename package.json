@@ -1,0 +1,37 @@
+{
+  "name": "web3-token-example",
+  "version": "1.0.0",
+  "description": "My first own ethereum token",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ferum-bot/Web3-Token-Example.git"
+  },
+  "keywords": [
+    "web3js",
+    "ehtereum",
+    "solidity",
+    "etherreum-token"
+  ],
+  "author": "Ferum-bot",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ferum-bot/Web3-Token-Example/issues"
+  },
+  "homepage": "https://github.com/Ferum-bot/Web3-Token-Example#readme",
+  "dependencies": {
+    "@openzeppelin/cli": "^2.8.2",
+    "@types/node": "^18.7.23",
+    "dotenv": "^16.0.3",
+    "ganache-cli": "^6.12.2",
+    "hardhat": "^2.11.2",
+    "typescript": "^4.8.4"
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.1.1",
+    "ethers": "^5.7.1"
+  }
+}

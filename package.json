@@ -24,6 +24,7 @@
   "homepage": "https://github.com/Ferum-bot/Web3-Token-Example#readme",
   "dependencies": {
     "@openzeppelin/cli": "^2.8.2",
+    "@openzeppelin/contracts": "^4.7.3",
     "@types/node": "^18.7.23",
     "dotenv": "^16.0.3",
     "ganache-cli": "^6.12.2",
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.1.1",
-    "ethers": "^5.7.1"
+    "ethers": "^5.7.1",
+    "ts-node": "^10.9.1"
   }
 }

@@ -1,4 +1,3 @@
-pragma abicoderv2;
 pragma solidity ^0.8.5;
 
 contract UserProfileService {
@@ -20,7 +19,7 @@ contract UserProfileService {
     address[] private allowedAddresses;
     mapping(address => bool) private allowedAddressToValue;
 
-    constructor() {
+    constructor() public {
         admin = msg.sender;
     }
 
@@ -33,15 +32,19 @@ contract UserProfileService {
     }
 
     function addNewProfile(
-        string _firstName,
-        string _lastName,
-        string _nickname,
-        string _email,
+        string memory _firstName,
+        string memory _lastName,
+        string memory _nickname,
+        string memory _email,
         address _profileAddress
     ) external {
-        require(_checkSenderIsAllowed(msg.sender));
+        require(_checkSenderIsAllowed(msg.sender), "Only allowed user can add new profile");
 
-        UserProfile profile = UserProfile(
+        if (_checkUserHasProfile(_profileAddress)) {
+            return;
+        }
+
+        UserProfile memory profile = UserProfile(
             _firstName,
             _lastName,
             _nickname,
@@ -54,69 +57,119 @@ contract UserProfileService {
     }
 
     function removeProfile(address _profileAddress) external {
-        require(_checkSenderIsAllowed(msg.sender));
+        require(_checkSenderIsAllowed(msg.sender), "Only allowed user can remove profile");
 
         delete addressToProfile[_profileAddress];
-        profiles = _removeAddressFromArray(profiles, _profileAddress);
+        UserProfile[] memory newProfiles = _removeAddressFromArray(profiles, _profileAddress);
+
+        while (profiles.length != 0) {
+            profiles.pop();
+        }
+
+        for (uint i = 0; i < newProfiles.length; i++) {
+            profiles.push(newProfiles[i]);
+        }
     }
 
     function getAllAllowedAddresses() external view returns (address[] memory) {
         return allowedAddresses;
     }
 
-    function getAllowedByAddress(address target) external view returns (bool memory) {
+    function getAllowedByAddress(address target) external view returns (bool) {
         return allowedAddressToValue[target];
     }
 
     function addAllowedAddress(address _allowedAddress) external {
-        require(_checkSenderIsAdmin(msg.sender));
+        require(_checkSenderIsAdmin(msg.sender), "Only admin can remove allowed address");
+
+        if (_checkSenderIsAllowed(_allowedAddress)) {
+            return;
+        }
 
         allowedAddresses.push(_allowedAddress);
         allowedAddressToValue[_allowedAddress] = true;
     }
 
     function removeAllowedAddress(address _allowedAddress) external {
-        require(_checkSenderIsAdmin(msg.sender));
+        require(_checkSenderIsAdmin(msg.sender), "Only admin can remove allowed address");
 
         allowedAddressToValue[_allowedAddress] = false;
         allowedAddresses = _removeAddressFromArray(allowedAddresses, _allowedAddress);
     }
 
-    function _checkSenderIsAllowed(address sender) private view returns (bool memory) {
+    function _checkSenderIsAllowed(address sender) private view returns (bool) {
         return allowedAddressToValue[sender] == true;
     }
 
-    function _checkSenderIsAdmin(address sender) private view returns (bool memory) {
+    function _checkSenderIsAdmin(address sender) private view returns (bool) {
         return sender == admin;
     }
 
+    function _checkUserHasProfile(address userAddress) private view returns (bool) {
+        for (uint i = 0; i < profiles.length; i++) {
+            if (profiles[i].profileAddress == userAddress) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     function _removeAddressFromArray(
-        address[] array,
+        address[] memory array,
         address target
     ) private pure returns (address[] memory) {
-        address[] memory result;
-
+        bool arrayContainsTarget = false;
         for (uint i = 0; i < array.length; i++) {
             if (array[i] == target) {
+                arrayContainsTarget = true;
+                break;
+            }
+        }
+
+        if (!arrayContainsTarget) {
+            return array;
+        }
+
+        address[] memory result = new address[](array.length - 1);
+
+        uint currentOffset = 0;
+        for (uint i = 0; i < array.length; i++) {
+            if (array[i] == target) {
+                currentOffset = 1;
                 continue;
             }
-            result.push(array[i]);
+            result[i - currentOffset] = array[i];
         }
 
         return result;
     }
 
     function _removeAddressFromArray(
-        UserProfile[] array,
+        UserProfile[] memory array,
         address target
     ) private pure returns (UserProfile[] memory) {
-        UserProfile[] memory result;
-
-        for (uint i = 0; i < array.length; i++) {
+        bool arrayContainsTarget = false;
+        uint length = array.length;
+        for (uint i = 0; i < length; i++) {
             if (array[i].profileAddress == target) {
+                arrayContainsTarget = true;
+                break;
+            }
+        }
+
+        if (!arrayContainsTarget) {
+            return array;
+        }
+
+        UserProfile[] memory result = new UserProfile[](length - 1);
+
+        uint currentOffset = 0;
+        for (uint i = 0; i < length; i++) {
+            if (array[i].profileAddress == target) {
+                currentOffset = 1;
                 continue;
             }
-            result.push(array[i]);
+            result[i - currentOffset] = array[i];
         }
 
         return result;

@@ -23,6 +23,10 @@ contract UserProfileService {
         admin = msg.sender;
     }
 
+    function getAdminAddress() external view returns (address) {
+        return admin;
+    }
+
     function getAllProfiles() external view returns (UserProfile[] memory) {
         return profiles;
     }
@@ -80,7 +84,7 @@ contract UserProfileService {
     }
 
     function addAllowedAddress(address _allowedAddress) external {
-        require(_checkSenderIsAdmin(msg.sender), "Only admin can remove allowed address");
+        require(_checkSenderIsAdmin(msg.sender), "Only admin can add allowed address");
 
         if (_checkSenderIsAllowed(_allowedAddress)) {
             return;

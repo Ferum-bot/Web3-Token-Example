@@ -1,8 +1,8 @@
 import "@nomiclabs/hardhat-ethers";
 import {ethers} from "hardhat";
 
-async function main() {
-    const counterContract = await ethers.getContractFactory('FerumBotToken')
+async function main(contractName: string) {
+    const counterContract = await ethers.getContractFactory(contractName)
     const gasPrise = await counterContract.signer.getGasPrice()
     console.info(`Current gas prise: ${gasPrise}`)
 
@@ -27,7 +27,9 @@ async function main() {
     console.info(`Contract deployed to ${deployContract.address}`)
 }
 
-main().then(() => process.exit(0)).catch((err) => {
+const USER_PROFILE_SERVICE = 'UserProfileService'
+
+main(USER_PROFILE_SERVICE).then(() => process.exit(0)).catch((err) => {
     console.error(err)
     process.exit(1)
 })
